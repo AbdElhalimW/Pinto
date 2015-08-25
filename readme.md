@@ -3,7 +3,7 @@
 ![preview](https://raw.github.com/maxlawrence/pinto/master/screenshot.png)
 
 ## Features
-* lightweight (the minified version is under 1KB)
+* lightweight
 * autosize support
 * fluid item width
 * animation (CSS3 transition)
