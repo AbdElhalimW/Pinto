@@ -1,6 +1,6 @@
 /*!
   Pinto jQuery Plugin
-  @name pinto.js
+  @name jquery.pinto.js
   @description Lightweight and customizable jQuery plugin for creating pinterest like responsive grid layout
   @author Max Lawrence 
   @version 1.1.0
@@ -126,6 +126,8 @@
                 this.el.css("position", "relative");
             }
             
+            this.el.data("pinto-enable", true);
+            
             if (this.autoResize) {
                 var _resize =  $(window).on("resize", $.proxy(this.resize, this));
                 this.el.on("remove", _resize.unbind);
@@ -179,7 +181,11 @@
             items.each(function(index, item) {
                 var $item = $(item),
                 i = self.getSmallestIndex(cols);
-                    
+                
+                if (!$item.is(":visible")) {
+                    return;
+                }
+                
                 $item.css({
                     position: "absolute",
                     top: cols[i] + marginY/2 + "px",
@@ -217,11 +223,21 @@
     
     /**
      * @param CfgOrCmd - config object or command name
-     * @param CmdArgs - some commands (like "value") may require an argument
+     *     you may set any public property (see above);
+     *     you may use .pinto("layout") to call the layout function
+     * @param CmdArgs - some commands may require an argument
      */
     $.fn.pinto = function(CfgOrCmd, CmdArgs) {
         var dataName = "pinto",
         instance = this.data(dataName);
+        
+        if (CfgOrCmd == "layout") {
+            if (!instance) {
+                throw Error("Calling 'layout' method on not initialized instance is forbidden");
+            }
+            
+            return instance.layout();
+        }
         
         return this.each(function() {
             var el = $(this),
