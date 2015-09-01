@@ -38,7 +38,6 @@ Example:
         gapY: 10,
         align: 'center',
         fitWidth: false,
-        animate: true,
         autoResize: true,
         resizeDelay: 50,
         onItemLayout: function($item, column, position) {}
