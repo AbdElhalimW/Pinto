@@ -1,24 +1,21 @@
-# Pinto jQuery Grid Layout Plugin (v1.1.0)
-
-![preview](https://raw.github.com/maxlawrence/pinto/master/screenshot.png)
+# Pinto jQuery Grid Layout Plugin
 
 ## Features
 * lightweight
 * autosize support
 * fluid item width
-* animation (CSS3 transition)
 
 ==========
 
-* 1. [About](#about)
-* 2. [Use](#how-to-use)
-* 3. [Demo](#demo)
-* 4. [License](#license)
+* [About](#about)
+* [Use](#how-to-use)
+* [Demo](#demo)
+* [License](#license)
 
 ### ABOUT
 
 Pinto.js is a lightweight and customizable jQuery plugin for creating pinterest like responsive grid layout.
-Pinto.js is intended for easy use and is fully deployable within minutes. The minified version is under 1KB.
+Pinto.js is intended for easy use and is fully deployable within minutes.
 
 ### HOW TO USE
 
@@ -36,30 +33,17 @@ Example:
 <script type="text/javascript">
     $('#container').pinto({
         itemSelector: '.block',
-        itemWidth: 200,			
-        marginX: 10,				
-        marginY: 10, 				
-        align: 'center',			    
-        fitWidth: false,			    
-        animate: true,				 
-        autoResize: true,			
-        resizeDelay: 50
+        itemWidth: 200,
+        gapX: 10,
+        gapY: 10,
+        align: 'center',
+        fitWidth: false,
+        animate: true,
+        autoResize: true,
+        resizeDelay: 50,
+        onItemLayout: function($item, column, position) {}
     });
 </script>
-```
-
-Default options:
-
-```JavaScript
-    itemSelector: '> div',		// block identificator;
-    itemWidth: 220,				// width of one grid block in pixels;
-	marginX: 10,				// width spacing between blocks in pixels;
-    marginY: 10, 				// height spacing between blocks in pixels;
-	align: 'left',			    // blocks alignment - 'left', 'right' or 'center';
-	fitWidth: true,			    // adjusts block width to create optimal layout based on container size;
-	animate: true,				// CSS animation when updating layout; 
-	autoResize: true,			// updates layout after browser is resized;
-	resizeDelay: 50				// time in milliseconds between browser resize and layout update;
 ```
 
 ### DEMO

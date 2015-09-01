@@ -3,7 +3,7 @@
   @name jquery.pinto.js
   @description Lightweight and customizable jQuery plugin for creating pinterest like responsive grid layout
   @author Max Lawrence 
-  @version 1.1.0
+  @version 1.2.0
   @category jQuery plugin
   @copyright (c) 2015 Max Lawrence (http://www.avirtum.com)
   @license Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
@@ -38,14 +38,14 @@
          * @public
          * @type {number}
          */
-        marginX: 10,
+        gapX: 10,
         
         /**
          * Height spacing between blocks in pixels;
          * @public
          * @type {number}
          */
-        marginY: 10,
+        gapY: 10,
         
         /**
          * Blocks alignment - "left", "right" or "center"
@@ -62,13 +62,6 @@
         fitWidth: true,
         
         /**
-         * CSS animation when updating layout
-         * @public
-         * @type {boolean}
-         */
-        animate: true,
-        
-        /**
          * Updates layout after browser is resized
          * @public
          * @type {boolean}
@@ -82,6 +75,16 @@
          */
         resizeDelay: 50,
         
+        /**
+         * Fire after item layout complete
+         * @public
+         * @type {function}
+         * @param {object} - jQuery item object
+         * @param {number} - column number
+         * @param {number} - item position inside the column
+         */
+         onItemLayout: function($item, column, position) {},
+        
         //=============================================
         // Protected Section
         //=============================================
@@ -93,25 +96,45 @@
         /**
          * Container element. Should be passed into constructor config
          * @protected
-         * @type {jQuery}
+         * @type {object}
          */
         el: null,
         
         /**
+         * Resize Event
+         * @protected
+         * @type {object}
+         */
+         resizeEvent: null,
+        
+        /**
          * Resize timer
          * @protected
-         * @type {timer}
+         * @type {object}
          */
         resizeTimer: null,
-
+         
         /**
          * Init/reinit the widget
          * @param {object}
          */
         init: function(config) {
+            this.clearWidget();
             $.extend(this, config);
             this.initWidget();
             this.layout();
+        },
+        
+        /**
+         * Remove events and callbacks
+         * @protected
+         */
+        clearWidget: function() {
+            if(this.resizeEvent) {
+                this.resizeEvent.unbind();
+                this.resizeEvent = null;
+            }
+            clearTimeout(this.resizeTimer);
         },
         
         /**
@@ -126,11 +149,9 @@
                 this.el.css("position", "relative");
             }
             
-            this.el.data("pinto-enable", true);
-            
             if (this.autoResize) {
-                var _resize =  $(window).on("resize", $.proxy(this.resize, this));
-                this.el.on("remove", _resize.unbind);
+                this.resizeEvent =  $(window).on("resize", $.proxy(this.resize, this));
+                this.el.on("remove", this.resizeEvent.unbind);
             }
         },
         
@@ -154,33 +175,49 @@
             }
             
             var self = this,
-            trans = (this.animate ? "top 0.5s, left 0.5s": "none"),
             items = this.el.find(this.itemSelector),
             width = this.el.innerWidth(),
-            marginX = parseInt(this.marginX || 0),
-            marginY = parseInt(this.marginY || 0),
             itemWidth = this.itemWidth,
-            colsCount = Math.max(Math.floor(width/(itemWidth + marginX)),1),
-            cols = [];
+            gapX = parseInt(this.gapX || 0),
+            gapY = parseInt(this.gapY || 0),
+            offset = 0,
+            colsCount = 0;
             
-            var i = colsCount;
-            while(i--) cols.push(0);
+            while(width > offset) {
+                offset += itemWidth;
+                if(width >= offset) {
+                    colsCount++;
+                } else {
+                    break;
+                }
+                offset += gapX;
+            };
+            colsCount = Math.max(colsCount, 1);
             
-            var offset = 0;
+            var cols = [], 
+            colsH = [],
+            i = colsCount;
+            while(i--) { 
+                cols.push(0);
+                colsH.push(0);
+            }
+            
+            offset = 0;
             if (this.fitWidth) {
-                itemWidth += Math.floor(0.5 + (width - (colsCount * (itemWidth + marginX))) / colsCount);
+                var gap = (colsCount-1) * gapX;
+                itemWidth += Math.floor(0.5 + (width - gap - colsCount * itemWidth) / colsCount);
             } else {
                 // calculate the offset based on the alignment of columns to the parent container
                 if (this.align === "center") {
-                    offset += Math.floor(0.5 + (width - (colsCount * (itemWidth + marginX))) >> 1);
+                    offset += Math.floor(0.5 + (width - gap - colsCount * itemWidth) >> 1);
                 } else if (this.align === "right") {
-                    offset += Math.floor(0.5 + width - (colsCount * (itemWidth + marginX)));
+                    offset += Math.floor(0.5 + (width - gap - colsCount * itemWidth));
                 };
             };
             
             items.each(function(index, item) {
                 var $item = $(item),
-                i = self.getSmallestIndex(cols);
+                i = self.getSmallestIndex(colsH);
                 
                 if (!$item.is(":visible")) {
                     return;
@@ -188,19 +225,23 @@
                 
                 $item.css({
                     position: "absolute",
-                    top: cols[i] + marginY/2 + "px",
-                    left: (itemWidth + marginX) * i + offset + "px",
-                    width: itemWidth,
-                    margin: marginY/2 + "px " + marginX/2 + "px",
-                    transition: trans
+                    top: colsH[i] + "px",
+                    left: (itemWidth + gapX) * i + offset + "px",
+                    width: itemWidth - ($item.outerWidth() - $item.width()) // control padding and border
                 });
                 
-                cols[i] += $item.innerHeight() + marginY;
+                colsH[i] += $item.outerHeight() + gapY;
+                
+                 if (typeof self.onItemLayout == "function") { // make sure the callback is a function
+                    self.onItemLayout.call(self, $item, i, cols[i]); // brings the scope to the callback
+                }
+                
+                cols[i]++;
             });
             
             var height=0;
             i = colsCount;
-            while(i--) if(cols[i]>height) height = cols[i];
+            while(i--) if(colsH[i]>height) height = colsH[i];
             this.el.css({height:height});
         },
         
@@ -210,7 +251,32 @@
          resize: function() {
             clearTimeout(this.resizeTimer);
             this.resizeTimer = setTimeout($.proxy(this.layout, this), this.resizeDelay);
-         }
+         },
+         
+        /**
+         * @protected
+         */
+        destroy: function () {
+            this.clearWidget();
+            this.el.removeData("pinto");
+            
+            // remove dynamic styles
+            var items = this.el.find(this.itemSelector);
+            items.each(function() {
+                var $item = $(this);
+                $item.css({
+                    position: "",
+                    top: "",
+                    left: "",
+                    width: "",
+                });
+            });
+            
+            this.el.css({
+                position: "",
+                height: ""
+            });
+        }
     }
     
     //=============================================
@@ -237,6 +303,14 @@
             }
             
             return instance.layout();
+        }
+        
+        if (CfgOrCmd == "destroy") {
+            if (!instance) {
+                throw Error("Calling 'destroy' method on not initialized instance is forbidden");
+            }
+            
+            return instance.destroy();
         }
         
         return this.each(function() {
