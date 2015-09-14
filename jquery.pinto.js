@@ -203,8 +203,8 @@
             }
             
             offset = 0;
+            var gap = (colsCount-1) * gapX;
             if (this.fitWidth) {
-                var gap = (colsCount-1) * gapX;
                 itemWidth += Math.floor(0.5 + (width - gap - colsCount * itemWidth) / colsCount);
             } else {
                 // calculate the offset based on the alignment of columns to the parent container

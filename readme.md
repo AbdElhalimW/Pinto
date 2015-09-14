@@ -1,12 +1,5 @@
 # Pinto jQuery Grid Layout Plugin
 
-## Features
-* lightweight
-* autosize support
-* fluid item width
-
-==========
-
 * [About](#about)
 * [Use](#how-to-use)
 * [Demo](#demo)
