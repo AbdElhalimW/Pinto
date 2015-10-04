@@ -3,7 +3,7 @@
   @name jquery.pinto.js
   @description Lightweight and customizable jQuery plugin for creating pinterest like responsive grid layout
   @author Max Lawrence 
-  @version 1.2.0
+  @version 1.3.0
   @category jQuery plugin
   @copyright (c) 2015 Max Lawrence (http://www.avirtum.com)
   @license Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
@@ -25,6 +25,13 @@
          * @type {string}
          */
         itemSelector: "> div",
+        
+        /**
+         * The class of items that will be skipped and not layouted
+         * @public
+         * @type {string}
+         */
+        itemSkipClass: "pinto-skip",
         
         /**
          * Width of one grid block in pixels
@@ -219,7 +226,7 @@
                 var $item = $(item),
                 i = self.getSmallestIndex(colsH);
                 
-                if (!$item.is(":visible")) {
+                if (!$item.is(":visible") || $item.hasClass(self.itemSkipClass)) {
                     return;
                 }
                 

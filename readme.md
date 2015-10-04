@@ -26,6 +26,7 @@ Example:
 <script type="text/javascript">
     $('#container').pinto({
         itemSelector: '.block',
+        itemSkipClass: '.pinto-skip',
         itemWidth: 200,
         gapX: 10,
         gapY: 10,
