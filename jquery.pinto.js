@@ -3,7 +3,7 @@
   @name jquery.pinto.js
   @description Lightweight and customizable jQuery plugin for creating pinterest like responsive grid layout
   @author Max Lawrence 
-  @version 1.3.0
+  @version 1.3.1
   @category jQuery plugin
   @copyright (c) 2015 Max Lawrence (http://www.avirtum.com)
   @license Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
@@ -234,7 +234,7 @@
                     position: "absolute",
                     top: colsH[i] + "px",
                     left: (itemWidth + gapX) * i + offset + "px",
-                    width: itemWidth - ($item.outerWidth() - $item.width()) // control padding and border
+                    width: itemWidth
                 });
                 
                 colsH[i] += $item.outerHeight() + gapY;
