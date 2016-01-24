@@ -3,7 +3,7 @@
   @name jquery.pinto.js
   @description Lightweight and customizable jQuery plugin for creating pinterest like responsive grid layout
   @author Max Lawrence 
-  @version 1.3.1
+  @version 1.4.0
   @category jQuery plugin
   @copyright (c) 2015 Max Lawrence (http://www.avirtum.com)
   @license Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
@@ -11,132 +11,46 @@
 (function($) {
     "use strict";
     
-    function Pinto(config) {
+    var ITEM_DATA_NAME = "pinto";
+    
+    function Pinto(config, el) {
+        this.el = el;
         this.init(config);
     };
     
     Pinto.prototype = {
         //=============================================
-        // Public Section
+        // Properties
         //=============================================
-        /**
-         * Block identificator (selector)
-         * @public
-         * @type {string}
-         */
-        itemSelector: "> div",
+        defaults : {
+            itemSelector: "> div", // a block identification key
+            itemSkipClass: "pinto-skip", // a class of items that will be skipped and not layouted
+            itemWidth: 220, // the width of one grid block in pixels
+            gapX: 10, // the width spacing between blocks in pixels
+            gapY: 10, // the height spacing between blocks in pixels
+            align: "left", // a blocks alignment ("left", "right", "center")
+            fitWidth: true, // adjust the block width to create optimal layout based on container size
+            autoResize: true, // update layout after browser is resized
+            resizeDelay: 50, // time in milliseconds between browser resize and layout update
+            onItemLayout: function($item, column, position) {}, // fire after item layout complete
+        },
         
-        /**
-         * The class of items that will be skipped and not layouted
-         * @public
-         * @type {string}
-         */
-        itemSkipClass: "pinto-skip",
-        
-        /**
-         * Width of one grid block in pixels
-         * @public
-         * @type {number}
-         */
-        itemWidth: 220,
-        
-        /**
-         * Width spacing between blocks in pixels;
-         * @public
-         * @type {number}
-         */
-        gapX: 10,
-        
-        /**
-         * Height spacing between blocks in pixels;
-         * @public
-         * @type {number}
-         */
-        gapY: 10,
-        
-        /**
-         * Blocks alignment - "left", "right" or "center"
-         * @public
-         * @type {string}
-         */
-        align: "left",
-        
-        /**
-         * Adjusts block width to create optimal layout based on container size
-         * @public
-         * @type {boolean}
-         */
-        fitWidth: true,
-        
-        /**
-         * Updates layout after browser is resized
-         * @public
-         * @type {boolean}
-         */
-        autoResize: true,
-        
-        /**
-         * Time in milliseconds between browser resize and layout update
-         * @public
-         * @type {number}
-         */
-        resizeDelay: 50,
-        
-        /**
-         * Fire after item layout complete
-         * @public
-         * @type {function}
-         * @param {object} - jQuery item object
-         * @param {number} - column number
-         * @param {number} - item position inside the column
-         */
-         onItemLayout: function($item, column, position) {},
-        
-        //=============================================
-        // Protected Section
-        //=============================================
-        /**
-         * @protected
-         */
-        constructor: Pinto,
-        
-        /**
-         * Container element. Should be passed into constructor config
-         * @protected
-         * @type {object}
-         */
-        el: null,
-        
-        /**
-         * Resize Event
-         * @protected
-         * @type {object}
-         */
-         resizeEvent: null,
-        
-        /**
-         * Resize timer
-         * @protected
-         * @type {object}
-         */
+        config: null,
+        resizeEvent: null,
         resizeTimer: null,
-         
-        /**
-         * Init/reinit the widget
-         * @param {object}
-         */
+        el: null, // a container element (should be passed into constructor)
+        
+        //=============================================
+        // Methods
+        //=============================================
         init: function(config) {
-            this.clearWidget();
-            $.extend(this, config);
-            this.initWidget();
+            this.destroyResize();
+            this.config = config;
+            this.build();
             this.layout();
         },
         
-        /**
-         * Remove events and callbacks
-         * @protected
-         */
-        clearWidget: function() {
+        destroyResize: function() {
             if(this.resizeEvent) {
                 this.resizeEvent.unbind();
                 this.resizeEvent = null;
@@ -144,10 +58,7 @@
             clearTimeout(this.resizeTimer);
         },
         
-        /**
-         * @protected
-         */
-        initWidget: function() {
+        build: function() {
             if (this.el.length == 0) {
                 return;
             }
@@ -156,37 +67,23 @@
                 this.el.css("position", "relative");
             }
             
-            if (this.autoResize) {
+            if (this.config.autoResize) {
                 this.resizeEvent =  $(window).on("resize", $.proxy(this.resize, this));
                 this.el.on("remove", this.resizeEvent.unbind);
             }
         },
         
-        /**
-         * @protected
-         */
-        getSmallestIndex: function (a) {
-            var index = 0;
-            for (var i = 1, len = a.length; i < len; i++) {
-                if (a[i] < a[index]) index = i;
-            }
-            return index;
-        },
-        
-        /**
-         * @protected
-         */
         layout: function () {
             if (this.el.length == 0 || !this.el.is(":visible")) { 
                 return;
             }
             
             var self = this,
-            items = this.el.find(this.itemSelector),
+            items = this.el.find(this.config.itemSelector),
             width = this.el.innerWidth(),
-            itemWidth = this.itemWidth,
-            gapX = parseInt(this.gapX || 0),
-            gapY = parseInt(this.gapY || 0),
+            itemWidth = this.config.itemWidth,
+            gapX = parseInt(this.config.gapX || 0),
+            gapY = parseInt(this.config.gapY || 0),
             offset = 0,
             colsCount = 0;
             
@@ -211,13 +108,13 @@
             
             offset = 0;
             var gap = (colsCount-1) * gapX;
-            if (this.fitWidth) {
+            if (this.config.fitWidth) {
                 itemWidth += Math.floor(0.5 + (width - gap - colsCount * itemWidth) / colsCount);
             } else {
                 // calculate the offset based on the alignment of columns to the parent container
-                if (this.align === "center") {
+                if (this.config.align === "center") {
                     offset += Math.floor(0.5 + (width - gap - colsCount * itemWidth) >> 1);
-                } else if (this.align === "right") {
+                } else if (this.config.align === "right") {
                     offset += Math.floor(0.5 + (width - gap - colsCount * itemWidth));
                 };
             };
@@ -239,8 +136,8 @@
                 
                 colsH[i] += $item.outerHeight() + gapY;
                 
-                 if (typeof self.onItemLayout == "function") { // make sure the callback is a function
-                    self.onItemLayout.call(self, $item, i, cols[i]); // brings the scope to the callback
+                 if (typeof self.config.onItemLayout == "function") { // make sure the callback is a function
+                    self.config.onItemLayout.call(self, $item, i, cols[i]); // brings the scope to the callback
                 }
                 
                 cols[i]++;
@@ -252,23 +149,17 @@
             this.el.css({height:height});
         },
         
-        /**
-         * @protected
-         */
-         resize: function() {
+        resize: function() {
             clearTimeout(this.resizeTimer);
-            this.resizeTimer = setTimeout($.proxy(this.layout, this), this.resizeDelay);
-         },
+            this.resizeTimer = setTimeout($.proxy(this.layout, this), this.config.resizeDelay);
+        },
          
-        /**
-         * @protected
-         */
         destroy: function () {
-            this.clearWidget();
-            this.el.removeData("pinto");
+            this.destroyResize();
+            this.el.removeData(ITEM_DATA_NAME);
             
             // remove dynamic styles
-            var items = this.el.find(this.itemSelector);
+            var items = this.el.find(this.config.itemSelector);
             items.each(function() {
                 var $item = $(this);
                 $item.css({
@@ -283,17 +174,20 @@
                 position: "",
                 height: ""
             });
-        }
+        },
+        
+        getSmallestIndex: function (a) {
+            var index = 0;
+            for (var i = 1, len = a.length; i < len; i++) {
+                if (a[i] < a[index]) index = i;
+            }
+            return index;
+        },
     }
     
     //=============================================
     // Init jQuery Plugin
     //=============================================
-    $.pinto = {
-        // Default options (you may override them)
-        defaults: Pinto.prototype
-    };
-    
     /**
      * @param CfgOrCmd - config object or command name
      *     you may set any public property (see above);
@@ -301,8 +195,7 @@
      * @param CmdArgs - some commands may require an argument
      */
     $.fn.pinto = function(CfgOrCmd, CmdArgs) {
-        var dataName = "pinto",
-        instance = this.data(dataName);
+        var instance = this.data(ITEM_DATA_NAME);
         
         if (CfgOrCmd == "layout") {
             if (!instance) {
@@ -322,18 +215,16 @@
         
         return this.each(function() {
             var el = $(this),
-            instance = el.data(dataName),
-            config = $.isPlainObject(CfgOrCmd) ? CfgOrCmd : {};
+            instance = el.data(ITEM_DATA_NAME),
+            options = $.isPlainObject(CfgOrCmd) ? CfgOrCmd : {};
 
             if (instance) {
+                var config = $.extend({}, instance.config, options);
                 instance.init(config);
             } else {
-                var initialConfig = $.extend({}, el.data());
-                
-                config = $.extend(initialConfig, config);
-                config.el = el;
-                instance = new Pinto(config);
-                el.data(dataName, instance);
+                var config = $.extend({}, Pinto.prototype.defaults, options);
+                instance = new Pinto(config, el);
+                el.data(ITEM_DATA_NAME, instance);
             }
         });
     }
