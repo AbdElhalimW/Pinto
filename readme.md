@@ -1,4 +1,4 @@
-# Pinto jQuery Grid Layout Plugin
+# Pinto jQuery Grid Layout Plugin v1.4.0
 
 * [About](#about)
 * [Use](#how-to-use)
