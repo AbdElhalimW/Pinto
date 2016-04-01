@@ -1,19 +1,33 @@
 $(document).ready(function($) {
     "use strict";
     
-    $('#container').pinto({
-        itemWidth:230,
-        gapX:10,
-        gapY:10,
-        onItemLayout: function($item, column, position) {
-        }
+    var container_01 = $("#container-01"),
+    container_02 = $("#container-02");
+    
+    container_01.pinto({
+        itemWidth:200,
+        gapX:30,
+        gapY:30,
     });
     
-    $("#pintoInit").click(function(){
-        $('#container').pinto();
+    container_02.pinto({
+        itemWidth:150,
+        gapX:15,
+        gapY:15,
     });
     
-    $("#pintoDestroy").click(function(){
-        $('#container').pinto("destroy");
+    $("#init").click(function(){
+        container_01.pinto();
+        container_02.pinto();
+    });
+    
+    $("#sync").click(function(){
+        container_01.pinto("sync");
+        container_02.pinto("sync");
+    });
+    
+    $("#destroy").click(function(){
+        container_01.pinto("destroy");
+        container_02.pinto("destroy");
     });
 });

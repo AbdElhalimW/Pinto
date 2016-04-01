@@ -1,40 +1,69 @@
 body {
-        background: #222 url(../images/wood.jpg);
-        font: Georgia, Serif;
-}
-h1, h2 {
-    color: #fff;
-    text-shadow: -2px 2px 0 #000;
-    text-align: center;
-    margin: 10px;
+    background:#46586e url(../images/seamless.png);
+    font-family:'Open Sans', sans-serif;
+    color:#fff;
+    font-size:16px;
+    text-align:center;
 }
 h1 {
-    font-size: 50px;
-}
-h2 {
-    font-size: 30px;
-}
-h3 {
-    font-size: 18px;
-    margin: 3px 5px;
-    color: #333;
+    font-size:36px;
 }
 .toolbar {
     text-align:center;
 }
-#container {
-    margin: 20px auto;
+.btn {
+    display:inline-block;
+    font-weight:bold;
+    font-size:14px;
+    text-transform:uppercase;
+    text-decoration:none;
+    color:#fff;
+    padding:10px 15px;
+    margin:5px;
+    min-width:100px;
+    background-color:#766dcc;
+    border-bottom:2px solid #625baa;
+    border-radius:3px;
+    cursor:pointer;
 }
-#container > div {
-    -webkit-box-shadow: 0 4px 15px -5px #555;
-    box-shadow: 0 4px 15px -5px #555;
-    background-color: #fff;
-    width:220px;
-    padding:2px;
-    border:2px solid rgba(0,0,0,0.8);
+.btn:hover {
+    background-color:#8178d0;
 }
-#container > div img {
-    padding: 0px;
-    display: block;
-    width: 100%;
+.btn.btn-green {
+    background-color:#6dcc84;
+    border-bottom:2px solid #5baa6e;
+}
+.btn.btn-green:hover {
+    background-color:#65bc7a;
+}
+#container-01,
+#container-02 {
+    margin:20px auto;
+    max-width:800px;
+}
+.pinto {
+    box-sizing: border-box;
+}
+.pinto {
+    margin-bottom:15px;
+    color:#333;
+    text-align:left;
+    border-radius:5px;
+    overflow:hidden;
+}
+.pinto img {
+    display:block;
+    width:100%;
+}
+.pinto .info {
+    padding:10px 15px;
+    background-color:#fff;
+}
+.pinto .info h2 {
+    margin:0;
+    font-size:18px;
+}
+.pinto .info p {
+    margin:10px 0 0;
+    font-size:14px;
 }
