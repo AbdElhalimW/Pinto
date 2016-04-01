@@ -336,7 +336,7 @@
             
             if (instance) {
                 var config = $.extend({}, instance.config, options);
-                instance.init(config);
+                instance.init(container, config);
             } else {
                 var config = $.extend({}, Pinto.prototype.defaults, options);
                 instance = new Pinto(container, config);
