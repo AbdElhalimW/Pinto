@@ -1,0 +1,20 @@
+{
+  "name": "pinto",
+  "homepage": "https://github.com/maxlawrence/pinto",
+  "authors": [
+    "Max Lawrence <avirtum@gmail.com>"
+  ],
+  "description": "jQuery Responsive Grid Layout Plugin",
+  "main": [
+    "jquery.pinto.js",
+    "jquery.pinto.min.js"
+  ],
+  "keywords": [
+    "javascript",
+    "jquery",
+    "grid",
+    "layout",
+    "pinterest",
+  ],
+  "license": "MIT",
+}
