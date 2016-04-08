@@ -7,7 +7,7 @@
   ],
   "description": "jQuery Responsive Grid Layout Plugin. It's a lightweight, responsive & customizable pinterest like grid with equal column width.",
   "main": [
-    "jquery.pinto.js",
+    "jquery.pinto.js"
   ],
   "keywords": [
     "javascript",
@@ -16,10 +16,10 @@
     "grid",
     "layout",
     "pinterest",
-    "responsive",
+    "responsive"
   ],
   "dependencies": {
     "jquery": ">1.9.0"
   },
-  "license": "MIT",
+  "license": "MIT"
 }
