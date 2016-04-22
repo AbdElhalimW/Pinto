@@ -7,7 +7,7 @@ Pinto.js is a customizable jQuery plugin for creating a pinterest like responsiv
 Advantages:
 - Super simple to install
 - Fast execution and lightweight code
-- You can change the settings - [see below](#advanced-usage)
+- You can change the settings
 
 ![](images/preview.png)
 
@@ -41,7 +41,7 @@ It just take seconds to install and use pinto.js.
 
 ```javascript
 $("#container").pinto();
-   
+```
 
 
 ### LICENSE
