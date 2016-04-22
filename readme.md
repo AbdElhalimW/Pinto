@@ -16,7 +16,6 @@ Advantages:
 It just take seconds to install and use pinto.js.
 
 [Read the documentation](http://avirtum.com/item/36/pinto-jquery-responsive-grid-layout-plugin/)
-
 [See the Demo](http://avirtum.com/preview/?item=pinto)
 
 ### Installation
